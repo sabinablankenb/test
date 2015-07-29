@@ -1,75 +1,72 @@
+<!DOCTYPE html>
 <html>
-<head> 
+  <head>
+    <title>Acceleration</title>
  
-<script src="scripts/cordova.js" type="text/javascript"></script>
-<script src="scripts/jquery-1.6.4.js" type="text/javascript"></script>
-<script src="scripts/jquery.mobile-1.0.1.min.js" type="text/javascript"></script>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="stylesheet" href="css/jquery.mobile-1.0.1.min.css" />
-<script type="text/javascript">
-  
-    var sensorAcc = null;
-  
-    document.addEventListener("deviceready", onDeviceReady, false);
+    <script type="text/javascript" charset="utf-8" src="PhoneGap.js"></script>
+    <script>
+        //first we want to wait for PhoneGap to load
+        document.addEventListener("deviceready", loaded, false)
+        //PhoneGap is loaded
+        function loaded(){
+            navigator.accelerometer.getCurrentAcceleration(onSuccess, onError);
+        }
  
-    function onDeviceReady() {
-        var options = { frequency: 80 };
+        //Get the current Acceleration data if Successful
+        function onSuccess(acceleration){
+            alert('Acceleration X: ' + acceleration.x + '\n' +
+              'Acceleration Y: ' + acceleration.y + '\n' +
+              'Acceleration Z: ' + acceleration.z + '\n' +
+              'Timestamp: '      + acceleration.timestamp + '\n');
+        }
  
-        sensorAcc = navigator.accelerometer.watchAcceleration(accelerometerSuccess, accelerometerError, options);
-    }
-     
-    function accelerometerError() {
-        alert('Failed to load accelerometer!');
-    }
-     
-    function accelerometerSuccess(acceleration) {        
-        var str = 'Acceleration X: ' + acceleration.x + '<br />' +
-                  'Acceleration Y: ' + acceleration.y + '<br />' +
-                  'Acceleration Z: ' + acceleration.z + '<br />';
-        $('div.result').html(str); 
-    }
-     
-</script>
-</head>
+        // alert if there is an error
+        function onError(){
+            alert("Error");
+        }
+            //wait for PhoneGap to load
+        document.addEventListener("deviceready", loaded, false);
+         
+        // PhoneGap is ready
+        function loaded() {
+            startWatch();
+        }
+         
+        // Start watching the acceleration
+         // var watchID = navigator.accelerometer.watchAcceleration(Success, Error, [Options]);
+        function startWatch() {
+         
+            // Update acceleration every 3 seconds
+            var options = { frequency: 3000 };
+         
+            watchID = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
+        }
+         
+        // Stop watching the acceleration
+        function stopWatch() {
+            if (watchID) {
+                navigator.accelerometer.clearWatch(watchID);
+                watchID = null;
+            }
+        }
+         
+        // Success
+        function onSuccess(acceleration) {
+            var element = document.getElementById('accelerometer');
+            element.innerHTML = 'Acceleration X: ' + acceleration.x + '<br />' +
+                                'Acceleration Y: ' + acceleration.y + '<br />' +
+                                'Acceleration Z: ' + acceleration.z + '<br />' +
+                                'Timestamp: '      + acceleration.timestamp + '<br />';
+        }
+         
+         // Error
+        function onError() {
+            alert('onError!');
+        }
+    </script>
+ 
+  </head>
 <body>
- 
-<div class='result'> </div>
- 
+    <div id="accelerometer">Waiting for accelerometer...</div>
 </body>
 </html>
-res/xml/config.xml
-
-<?xml version="1.0" encoding="utf-8"?>
-<cordova>
- 
-    <access origin="http://127.0.0.1*"/> <!-- allow local pages -->
- 
-    <content src="index.html" />
- 
-    <log level="DEBUG"/>
-    <preference name="useBrowserHistory" value="true" />
-    <preference name="exit-on-suspend" value="false" />
-     
-  <plugins>
-    <plugin name="App" value="org.apache.cordova.App"/>
-    <plugin name="Geolocation" value="org.apache.cordova.GeoBroker"/>
-    <plugin name="Device" value="org.apache.cordova.Device"/>
-    <plugin name="Accelerometer" value="org.apache.cordova.AccelListener"/>
-    <plugin name="Compass" value="org.apache.cordova.CompassListener"/>
-    <plugin name="Media" value="org.apache.cordova.AudioHandler"/>
-    <plugin name="Camera" value="org.apache.cordova.CameraLauncher"/>
-    <plugin name="Contacts" value="org.apache.cordova.ContactManager"/>
-    <plugin name="File" value="org.apache.cordova.FileUtils"/>
-    <plugin name="Notification" value="org.apache.cordova.Notification"/>
-    <plugin name="Storage" value="org.apache.cordova.Storage"/>
-    <plugin name="FileTransfer" value="org.apache.cordova.FileTransfer"/>
-    <plugin name="Capture" value="org.apache.cordova.Capture"/>
-    <plugin name="Battery" value="org.apache.cordova.BatteryListener"/>
-    <plugin name="SplashScreen" value="org.apache.cordova.SplashScreen"/>
-    <plugin name="Echo" value="org.apache.cordova.Echo" />
-    <plugin name="Globalization" value="org.apache.cordova.Globalization"/>
-    <plugin name="InAppBrowser" value="org.apache.cordova.InAppBrowser"/>
-    <plugin name="SpeechRecognizer" value="com.example.SpeechRecognizer"/>   
-  </plugins>
- 
-</cordova>
